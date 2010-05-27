@@ -38,6 +38,7 @@ const uint32 N_A = 500;//2048;
 const uint32 N_R = 500;//2048;
 int main()
 {
+    //テーブル作成
     vector<uint32*> table;
     uint32* factor;
     for(uint32 i=0; i<N_A; i++) {
@@ -53,15 +54,20 @@ int main()
         table.push_back(factor);
     }
     sort(table.begin(), table.end(), GoalLess() );
-    //後半
+    //goal
+    int count = 0;
+    int t = 1;
     cout << "後半" << endl;
     init_genrand( (unsigned long)time(0) );
     vector<uint32*>::iterator it = table.begin();
     while( it != table.end() ) {
+        count++;
         printf( "%u:%u\n", (*it)[0], (*it)[1] );
-        r = genrand_int32();
+        uint32 a = count;//genrand_int32();
+        uint32 b = a;
         for(uint32 i=0; i<N_R; i++) {
-            r = thash(r);
+            b = thash(b);
+            if( :
         }
         
         
