@@ -86,6 +86,10 @@ int main()
         init_genrand( (unsigned long)( time(0)+rand() ) );
         uint32 a = genrand_int32();
         uint32 b = a;
+        //debug
+        //a = 1024;
+        //b = a;
+        //debug
         for(uint32 j=1; j<=N_R; j++) {
             b = thash(b);
             struct tblchkret tmp;
@@ -93,28 +97,56 @@ int main()
             bool bol = tmp.hyouka;
             vector<uint32*>::iterator k = tmp.point;
             if( bol ) {//tableをチェックしてイテレータkでbが見つかった
-                printf("%u:%u\n", b, (*k)[1]);
+                printf( "start:%u goal:%u j:%u a:%u b:%u\n", (*k)[0], (*k)[1], j, a,b );
+                
+                //debug
+                uint32 daa = (*k)[0];
+                uint32 da = a;
+                for (uint32 l=1; l<=N_R-j; l++) {
+                    printf("長さ合わせ  %u\n", daa);
+                    daa = thash(daa); 
+                }
+                uint32 dc=j;
+                for(uint32 ll=0; ll<N_R; ll++) {
+                    printf("hikaku  %u:%u count:%u\n", daa,da,dc);
+                    daa = thash(daa);
+                    da = thash(da);
+                    dc++;
+                }
+                return 1;
+                /*
+                
+                
+                printf("%u:%u\n", (*k)[0], (*k)[1]);
+                for(uint32 jj=0; jj<N_R+2; jj++) {
+                    printf("%u: %d\n",(*k)[0], jj);
+                    (*k)[0] = thash( (*k)[0] );
+                }
+                */
+                //debug
                 printf("入った\n");
                 uint32 aa = (*k)[0];
-                //同じ値でマージしてないかチェック
-                
+                printf("aa:%u\n", aa);
+                //aaと(*k)[0]を同じ位置に合わせる
                 for( uint32 l=1; l<=N_R-j; l++ ) {
                     aa = thash(aa);
                 }
-                
                 //a-b=(*k)[1]-(*k)[0]=aa
                 if( a != aa ) {
+                    printf("a:%u aa:%u\n",a,aa);
                     b = thash(a);
                     uint32 bb = thash(aa);
-                    uint32 count = 0;
+                    uint32 count = j;
+                    printf("b:%u bb:%u\n",b,bb);
                     while( b != bb ) {
-                        count++;
-                        printf("%u:%u  %u\n",b, bb, count);
-                        if( count >= N_R+1 ) { return 0; }
+                        printf("b:%u bb:%u  count:%u\n",b, bb, count);
+                        //if( count >= N_R-j+1 || (*k)[1]==b || (*k)[0]==bb ) { printf("%u:%d\n",(*k)[1],j);return 0; }
+                        if (count >= N_R+2) { return 0; } 
                         a = b;
                         aa = bb;
                         b = thash(a);
                         bb = thash(aa);
+                        count++;//debug
                     }
                     uint32 factor[3];
                     factor[0] = b;
