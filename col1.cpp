@@ -57,8 +57,8 @@ struct tblchkret tablechk(vector<uint32*> ctab, uint32 target ) {
 
 //Alpha<=1/3 GAMMA=(1-Alpha)/2=1/3
 //N=2^32
-const uint32 N_A = 500;//2048;
-const uint32 N_R = 500;//2048;
+const uint32 N_A = 10;//2048;
+const uint32 N_R = 10;//2048;
 int main()
 {
     //テーブル作成
@@ -91,6 +91,7 @@ int main()
         //b = a;
         //debug
         for(uint32 j=1; j<=N_R; j++) {
+            //printf("b生成 b:%u thash(b):%u j:%u\n", b, thash(b),j);
             b = thash(b);
             struct tblchkret tmp;
             tmp = tablechk(table,b);
@@ -100,21 +101,20 @@ int main()
                 printf( "start:%u goal:%u j:%u a:%u b:%u\n", (*k)[0], (*k)[1], j, a,b );
                 
                 //debug
+                /*
                 uint32 daa = (*k)[0];
                 uint32 da = a;
                 for (uint32 l=1; l<=N_R-j; l++) {
                     printf("長さ合わせ  %u\n", daa);
                     daa = thash(daa); 
                 }
-                uint32 dc=j;
+                uint32 dc=N_R-j+2;
                 for(uint32 ll=0; ll<N_R; ll++) {
                     printf("hikaku  %u:%u count:%u\n", daa,da,dc);
                     daa = thash(daa);
                     da = thash(da);
                     dc++;
                 }
-                return 1;
-                /*
                 
                 
                 printf("%u:%u\n", (*k)[0], (*k)[1]);
@@ -126,7 +126,7 @@ int main()
                 //debug
                 printf("入った\n");
                 uint32 aa = (*k)[0];
-                printf("aa:%u\n", aa);
+                //printf("aa:%u\n", aa);
                 //aaと(*k)[0]を同じ位置に合わせる
                 for( uint32 l=1; l<=N_R-j; l++ ) {
                     aa = thash(aa);
@@ -136,12 +136,12 @@ int main()
                     printf("a:%u aa:%u\n",a,aa);
                     b = thash(a);
                     uint32 bb = thash(aa);
-                    uint32 count = j;
+                    uint32 count = N_R-j;
                     printf("b:%u bb:%u\n",b,bb);
                     while( b != bb ) {
                         printf("b:%u bb:%u  count:%u\n",b, bb, count);
                         //if( count >= N_R-j+1 || (*k)[1]==b || (*k)[0]==bb ) { printf("%u:%d\n",(*k)[1],j);return 0; }
-                        if (count >= N_R+2) { return 0; } 
+                        //if (count >= N_R+2) { return 0; } 
                         a = b;
                         aa = bb;
                         b = thash(a);
@@ -155,8 +155,8 @@ int main()
                     retable.push_back(factor);
                     ++t;
                 }
-                continue;
-                printf("出た\n");
+                printf("出た%u\n",t);
+                break;
             }
         }
     }
