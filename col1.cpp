@@ -18,8 +18,11 @@
 
 using namespace std;
 
+uint32 gc;
+
 uint32 thash(uint32 m)
 {
+    gc++;
     SHA1 sha;
     unsigned message_digest[5];
     char str[10];
@@ -107,6 +110,7 @@ const uint32 N_A = 2048;//2048;
 const uint32 N_R = 2048;//2048;
 int main()
 {
+    gc = 0;
     //テーブル作成
     vector<uint32*> table;
     uint32* factor;
@@ -224,7 +228,7 @@ int main()
     //retableにはuniqueな2collisionsがN_A個入ってる
     //ランダムな値に関数を取ってretableと一致するかどうか調べる
     printf("search\n");
-    const uint32 N_B = 1048576;//2^20
+    const uint32 N_B = 2097152;//2^20
     init_genrand( (unsigned long)time(0) );
     for(uint32 i=0; i<N_B; i++) {
         uint32 a = genrand_int32();
@@ -235,9 +239,9 @@ int main()
         bool bol = tmp.hyouka;
         list<uint32*>::iterator k = tmp.point;
         if( bol ) {
-            printf( "a:%u k1:%u k2:%u  c:%u\n",a,(*k)[1],(*k)[2],b,i );
+            printf( "a:%u k1:%u k2:%u  c:%u gc:%u\n",a,(*k)[1],(*k)[2],b,i,gc );
             if( (*k)[1] != a && (*k)[2] != a ) {
-                printf( "%u:%u:%u from %u\n",a,(*k)[1],(*k)[2],b );
+                printf( "%u:%u:%u from %u   i:%u gc:%u\n",a,(*k)[1],(*k)[2],b,i,gc );
             }
         }
     }

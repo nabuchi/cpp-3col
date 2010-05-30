@@ -23,8 +23,12 @@ uint32 thash(uint32 m)
 
 int main()
 {
-    uint32 seed = 1;
-    for(uint32 i=0; i<20; i++) {
+    uint32 inp;
+    uint32 count;
+    cout << "入力と回数" << endl; 
+    cin >> inp >> count;
+    uint32 seed = inp;
+    for(uint32 i=0; i<count; i++) {
         printf("%u:%u\n",seed,i);
         seed = thash(seed);
     }
