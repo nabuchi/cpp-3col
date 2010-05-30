@@ -8,7 +8,7 @@ clean :
 	rm *.o
 
 .c.o :
-	g++ -c $<
+	g++ -O3 -c $<
 
 .cpp.o :
-	g++ -c $<
+	g++ -O3 -c $<

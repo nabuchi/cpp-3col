@@ -57,8 +57,8 @@ struct tblchkret tablechk(vector<uint32*> ctab, uint32 target ) {
 
 //Alpha<=1/3 GAMMA=(1-Alpha)/2=1/3
 //N=2^32
-const uint32 N_A = 10;//2048;
-const uint32 N_R = 10;//2048;
+const uint32 N_A = 100;//2048;
+const uint32 N_R = 100;//2048;
 int main()
 {
     //テーブル作成
@@ -82,7 +82,7 @@ int main()
     cout << "後半" << endl;
     uint32 t = 1;
     srand( (unsigned) time(0) );
-    while( t < N_A ){
+    while( retable.size() < 7/*N_A*/ ){
         init_genrand( (unsigned long)( time(0)+rand() ) );
         uint32 a = genrand_int32();
         uint32 b = a;
@@ -133,13 +133,13 @@ int main()
                 }
                 //a-b=(*k)[1]-(*k)[0]=aa
                 if( a != aa ) {
-                    printf("a:%u aa:%u\n",a,aa);
+                    //printf("a:%u aa:%u\n",a,aa);
                     b = thash(a);
                     uint32 bb = thash(aa);
                     uint32 count = N_R-j;
-                    printf("b:%u bb:%u\n",b,bb);
+                    //printf("b:%u bb:%u\n",b,bb);
                     while( b != bb ) {
-                        printf("b:%u bb:%u  count:%u\n",b, bb, count);
+                        //printf("b:%u bb:%u  count:%u\n",b, bb, count);
                         //if( count >= N_R-j+1 || (*k)[1]==b || (*k)[0]==bb ) { printf("%u:%d\n",(*k)[1],j);return 0; }
                         //if (count >= N_R+2) { return 0; } 
                         a = b;
@@ -148,19 +148,26 @@ int main()
                         bb = thash(aa);
                         count++;//debug
                     }
-                    uint32 factor[3];
+                    uint32* factor;
+                    factor = new uint32[3];
                     factor[0] = b;
                     factor[1] = a;
                     factor[2] = aa;
                     retable.push_back(factor);
                     ++t;
+                    printf("出た%u\n",retable.size());
+                    break;
+                } else {
+                    printf("一致した%u\n",t);
+                    break;
                 }
-                printf("出た%u\n",t);
-                break;
             }
         }
     }
     //tableを出力
     printf("owari\n");
+    for(list<uint32*>::iterator kout = retable.begin(); kout != retable.end(); ++kout) {
+        printf("Img:%u Pr1:%u Pr2:%u\n", (*kout)[0], (*kout)[1], (*kout)[2] );
+    }
    return 0;
 }
