@@ -19,10 +19,12 @@
 using namespace std;
 
 uint32 gc;
+uint32 gcc;
 
 uint32 thash(uint32 m)
 {
     gc++;
+    if(gc == 4294967296) { gcc++; }
     SHA1 sha;
     unsigned message_digest[5];
     char str[10];
@@ -111,6 +113,7 @@ const uint32 N_R = 2048;//2048;
 int main()
 {
     gc = 0;
+    gcc = 0;
     //テーブル作成
     vector<uint32*> table;
     uint32* factor;
