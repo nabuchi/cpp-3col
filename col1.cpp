@@ -10,6 +10,7 @@
 
 #include "mt.h"
 //#include "md5Main.h"
+#include "sha1.h"
 
 #ifndef uint32
 #define uint32 unsigned int
@@ -18,6 +19,19 @@
 using namespace std;
 
 uint32 thash(uint32 m)
+{
+    SHA1 sha;
+    unsigned message_digest[5];
+    char str[10];
+
+    sha.Reset();
+    sprintf(str, "%u", m);
+    sha << str;
+    sha.Result(message_digest);
+
+    return (uint32)message_digest[4];   
+}
+uint32 thash2(uint32 m)
 {
     uint32 ret;
     init_genrand((unsigned long)m);
@@ -101,7 +115,7 @@ int main()
         uint32 p = (uint32)i*i;
         //printf("%u\n", p);
         factor[0] = p; 
-        for(uint32 j=0; j<N_R; j++) {
+        for(uint j=0; j<N_R; j++) {
             p = thash(p);
         }
         factor[1] = p;
@@ -113,10 +127,11 @@ int main()
     list<uint32*> retable;
     cout << "後半" << endl;
     uint32 t = 0;
-    srand( (unsigned) time(0) );
+    init_genrand( (unsigned long)time(0) );
     while( retable.size() < N_A ){
-        init_genrand( (unsigned long)( time(0)+rand() ) );
+        //printf("seed:%u\n",seed);
         uint32 a = genrand_int32();
+        //printf("%u\n",a);
         uint32 b = a;
         //debug
         //a = 1024;
@@ -185,6 +200,7 @@ int main()
                     factor[0] = b;
                     factor[1] = a;
                     factor[2] = aa;
+                    //printf("b:%u a:%u aa:%u\n",b,a,aa);
                     retable.push_back(factor);
                     ++t;
                     if( t%100 == 0 ) { printf("出た%u\n",retable.size()); }
@@ -193,7 +209,7 @@ int main()
                     }
                     break;
                 } else {
-                    //printf("一致した%u\n",t);
+                    printf("一致した%u\n",t);
                     break;
                 }
             }
@@ -209,10 +225,10 @@ int main()
     //ランダムな値に関数を取ってretableと一致するかどうか調べる
     printf("search\n");
     const uint32 N_B = 1048576;//2^20
-    srand( (unsigned) time(0) );
+    init_genrand( (unsigned long)time(0) );
     for(uint32 i=0; i<N_B; i++) {
-        init_genrand( (unsigned long)(time(0)+rand()) );
         uint32 a = genrand_int32();
+        //printf("%u\n",a);
         uint32 b = thash(a);
         struct tblchkret_l tmp;
         tmp = tablechk_l(retable, b);
