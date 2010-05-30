@@ -7,6 +7,7 @@
 #include <functional>
 #include <algorithm>
 #include <ctime>
+#include <time.h>
 
 #include "mt.h"
 //#include "md5Main.h"
@@ -20,11 +21,13 @@ using namespace std;
 
 uint32 gc;
 uint32 gcc;
+uint32 gccc;
 
 uint32 thash(uint32 m)
 {
     gc++;
-    if(gc == 4294967296) { gcc++; }
+    if(gc == 4000000000) { gcc++; }
+    if(gcc == 4000000000) { gccc++; }
     SHA1 sha;
     unsigned message_digest[5];
     char str[10];
@@ -108,12 +111,16 @@ struct tblchkret tablechk(vector<uint32*> ctab, uint32 target ) {
 
 //Alpha<=1/3 GAMMA=(1-Alpha)/2=1/3
 //N=2^32
-const uint32 N_A = 2048;//2048;
-const uint32 N_R = 2048;//2048;
+const uint32 N_A = 1663;//2048;
+const uint32 N_R = 1663;//2048;
 int main()
 {
+    time_t start,end;
+    start = time(0);
+    printf("開始時間:%d\n",start);
     gc = 0;
     gcc = 0;
+    gccc = 0;
     //テーブル作成
     vector<uint32*> table;
     uint32* factor;
@@ -132,6 +139,9 @@ int main()
     sort(table.begin(), table.end(), GoalLess() );
     //goal
     list<uint32*> retable;
+    time_t kourap = time(0);
+    printf("後半開始時間:%d\n",kourap);
+    printf("前半時間:%d gc:%u gcc:%u\n",kourap-start,gc,gcc);
     cout << "後半" << endl;
     uint32 t = 0;
     init_genrand( (unsigned long)time(0) );
@@ -211,9 +221,9 @@ int main()
                     retable.push_back(factor);
                     ++t;
                     if( t%100 == 0 ) { printf("出た%u\n",retable.size()); }
-                    if( !(retable.size() < N_A) ) {//ループが終わりそうだったらuniqueする 
-                        retable.sort(StartLess());retable.unique(ZeroEqual());printf("unique:%u\n", retable.size());
-                    }
+                    //if( !(retable.size() < N_A) ) {//ループが終わりそうだったらuniqueする 
+                    //    retable.sort(StartLess());retable.unique(ZeroEqual());printf("unique:%u\n", retable.size());
+                    //}
                     break;
                 } else {
                     printf("一致した%u\n",t);
@@ -230,8 +240,11 @@ int main()
     }
     //retableにはuniqueな2collisionsがN_A個入ってる
     //ランダムな値に関数を取ってretableと一致するかどうか調べる
+    time_t srap = time(0);
+    printf("サーチ開始時間:%d\n",srap);
+    printf("後半時間:%d gc:%u gcc:%u\n",srap-kourap,gc,gcc);
     printf("search\n");
-    const uint32 N_B = 2097152;//2^20
+    const uint32 N_B = 2581897;//2^20
     init_genrand( (unsigned long)time(0) );
     for(uint32 i=0; i<N_B; i++) {
         uint32 a = genrand_int32();
@@ -242,11 +255,16 @@ int main()
         bool bol = tmp.hyouka;
         list<uint32*>::iterator k = tmp.point;
         if( bol ) {
-            printf( "a:%u k1:%u k2:%u  c:%u gc:%u\n",a,(*k)[1],(*k)[2],b,i,gc );
+            printf( "a:%u k1:%u k2:%u  from%u i:%u gc:%u gcc:%u\n",a,(*k)[1],(*k)[2],b,i,gc,gcc );
             if( (*k)[1] != a && (*k)[2] != a ) {
-                printf( "%u:%u:%u from %u   i:%u gc:%u\n",a,(*k)[1],(*k)[2],b,i,gc );
+                time_t okrap = time(0);
+                printf( "%u:%u:%u from %u   i:%u gc:%u gcc:%u time:%d\n",a,(*k)[1],(*k)[2],b,i,gc,gcc,okrap-srap );
             }
         }
     }
+    end = time(0);
+    printf("終了時間:%d\n",end);
+    printf("サーチ時間:%d gc:%u gcc:%u\n",end-srap,gc,gcc);
+    printf("処理時間:%d\n",end-start);
     return 0;
 }
