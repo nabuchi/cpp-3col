@@ -31,6 +31,38 @@ struct GoalLess
         return li[1] < ri[1];
     }
 };
+struct StartLess
+{
+    bool operator()( const uint32* li, const uint32* ri ) const
+    {
+        return li[0] < ri[0];
+    }
+};
+struct ZeroEqual
+{
+    bool operator() (const uint32* li, const uint32* ri) {
+        return li[0] == ri[0];
+    }
+};
+struct tblchkret_l
+{
+    bool hyouka;
+    list<uint32*>::iterator point;
+};
+struct tblchkret_l tablechk_l(list<uint32*> ctab, uint32 target ) {
+    struct tblchkret_l ret;
+    list<uint32*>::iterator pp;
+    ret.hyouka = false;
+    ret.point = ctab.begin();
+    for(pp=ctab.begin(); pp!=ctab.end(); ++pp) {
+        if( (*pp)[0] == target ) {
+            ret.hyouka = true;
+            ret.point = pp;
+            return ret;
+        }
+    }
+    return ret;
+}
 
 struct tblchkret
 {
@@ -57,8 +89,8 @@ struct tblchkret tablechk(vector<uint32*> ctab, uint32 target ) {
 
 //Alpha<=1/3 GAMMA=(1-Alpha)/2=1/3
 //N=2^32
-const uint32 N_A = 100;//2048;
-const uint32 N_R = 100;//2048;
+const uint32 N_A = 2048;//2048;
+const uint32 N_R = 2048;//2048;
 int main()
 {
     //テーブル作成
@@ -80,9 +112,9 @@ int main()
     //goal
     list<uint32*> retable;
     cout << "後半" << endl;
-    uint32 t = 1;
+    uint32 t = 0;
     srand( (unsigned) time(0) );
-    while( retable.size() < 7/*N_A*/ ){
+    while( retable.size() < N_A ){
         init_genrand( (unsigned long)( time(0)+rand() ) );
         uint32 a = genrand_int32();
         uint32 b = a;
@@ -98,7 +130,7 @@ int main()
             bool bol = tmp.hyouka;
             vector<uint32*>::iterator k = tmp.point;
             if( bol ) {//tableをチェックしてイテレータkでbが見つかった
-                printf( "start:%u goal:%u j:%u a:%u b:%u\n", (*k)[0], (*k)[1], j, a,b );
+                //printf( "start:%u goal:%u j:%u a:%u b:%u\n", (*k)[0], (*k)[1], j, a,b );
                 
                 //debug
                 /*
@@ -124,7 +156,7 @@ int main()
                 }
                 */
                 //debug
-                printf("入った\n");
+                //printf("入った\n");
                 uint32 aa = (*k)[0];
                 //printf("aa:%u\n", aa);
                 //aaと(*k)[0]を同じ位置に合わせる
@@ -155,10 +187,13 @@ int main()
                     factor[2] = aa;
                     retable.push_back(factor);
                     ++t;
-                    printf("出た%u\n",retable.size());
+                    if( t%100 == 0 ) { printf("出た%u\n",retable.size()); }
+                    if( !(retable.size() < N_A) ) {//ループが終わりそうだったらuniqueする 
+                        retable.sort(StartLess());retable.unique(ZeroEqual());printf("unique:%u\n", retable.size());
+                    }
                     break;
                 } else {
-                    printf("一致した%u\n",t);
+                    //printf("一致した%u\n",t);
                     break;
                 }
             }
@@ -166,8 +201,29 @@ int main()
     }
     //tableを出力
     printf("owari\n");
+    retable.sort( StartLess() );    
     for(list<uint32*>::iterator kout = retable.begin(); kout != retable.end(); ++kout) {
-        printf("Img:%u Pr1:%u Pr2:%u\n", (*kout)[0], (*kout)[1], (*kout)[2] );
+        printf("Img:%u Pr1:%u Pr2:%u Size:%u\n", (*kout)[0], (*kout)[1], (*kout)[2], retable.size() );
     }
-   return 0;
+    //retableにはuniqueな2collisionsがN_A個入ってる
+    //ランダムな値に関数を取ってretableと一致するかどうか調べる
+    printf("search\n");
+    const uint32 N_B = 1048576;//2^20
+    srand( (unsigned) time(0) );
+    for(uint32 i=0; i<N_B; i++) {
+        init_genrand( (unsigned long)(time(0)+rand()) );
+        uint32 a = genrand_int32();
+        uint32 b = thash(a);
+        struct tblchkret_l tmp;
+        tmp = tablechk_l(retable, b);
+        bool bol = tmp.hyouka;
+        list<uint32*>::iterator k = tmp.point;
+        if( bol ) {
+            printf( "a:%u k1:%u k2:%u  c:%u\n",a,(*k)[1],(*k)[2],b,i );
+            if( (*k)[1] != a && (*k)[2] != a ) {
+                printf( "%u:%u:%u from %u\n",a,(*k)[1],(*k)[2],b );
+            }
+        }
+    }
+    return 0;
 }
