@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <ctime>
 #include <time.h>
-//
 
 #include "mt.h"
 #include "sha1.h"
