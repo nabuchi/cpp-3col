@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include "sha1.h"
 
 #ifndef uint32
@@ -28,10 +29,13 @@ int main()
     cout << "入力と回数" << endl; 
     cin >> inp >> count;
     uint32 seed = inp;
+    clock_t start = clock();
     for(uint32 i=0; i<count; i++) {
-        printf("%u:%u\n",seed,i);
+        //printf("%u:%u\n",seed,i);
         seed = thash(seed);
     }
+    clock_t end = clock();
+    printf("処理時間:%d\n",(end-start));
     return 0;
 }
 
