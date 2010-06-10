@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <ctime>
 #include <time.h>
-//
+<<<<<<< HEAD:col1.cpp
+#include <map>
+>>>>>>> 0feec33736b974874302b56e8c9085c11f9e4231:col1.cpp
 
 #include "mt.h"
 #include "sha1.h"
@@ -122,7 +124,8 @@ int main()
     gcc = 0;
     gccc = 0;
     //テーブル作成
-    vector<uint32*> table;
+    //vector<uint32*> table;
+    map<uint32, uint32> table;
     uint32* factor;
     for(uint32 i=0; i<N_A; i++) {
         factor = new uint32[2];
@@ -134,11 +137,13 @@ int main()
         }
         factor[1] = p;
         //printf("%u:%u\n", factor[0], factor[1]);
-        table.push_back(factor);
+        //table.push_back(factor);
+        table.insert( pair<uint32, uint32>( factor[1], factor[0] ) );
     }
-    sort(table.begin(), table.end(), GoalLess() );
+    //sort(table.begin(), table.end(), GoalLess() );
     //goal
-    list<uint32*> retable;
+    //list<uint32*> retable;
+    map<uint32, uint32*> retable;
     time_t kourap = time(0);
     printf("後半開始時間:%d\n",kourap);
     printf("前半時間:%d gc:%u gcc:%u\n",kourap-start,gc,gcc);
@@ -157,11 +162,14 @@ int main()
         for(uint32 j=1; j<=N_R; j++) {
             //printf("b生成 b:%u thash(b):%u j:%u\n", b, thash(b),j);
             b = thash(b);
-            struct tblchkret tmp;
-            tmp = tablechk(table,b);
-            bool bol = tmp.hyouka;
-            vector<uint32*>::iterator k = tmp.point;
-            if( bol ) {//tableをチェックしてイテレータkでbが見つかった
+            //struct tblchkret tmp;
+            //tmp = tablechk(table,b);
+            //if( table[b] != nil )
+            //bool bol = tmp.hyouka;
+            //vector<uint32*>::iterator k = tmp.point;
+            map<uint32, uint32>::iterator k;
+            k = table.find(b);
+            if( k != table.end() ) {//tableをチェックしてイテレータkでbが見つかった
                 //printf( "start:%u goal:%u j:%u a:%u b:%u\n", (*k)[0], (*k)[1], j, a,b );
                 
                 //debug
@@ -189,7 +197,8 @@ int main()
                 */
                 //debug
                 //printf("入った\n");
-                uint32 aa = (*k)[0];
+                //uint32 aa = (*k)[0];
+                uint32 aa = k->second;
                 //printf("aa:%u\n", aa);
                 //aaと(*k)[0]を同じ位置に合わせる
                 for( uint32 l=1; l<=N_R-j; l++ ) {
@@ -213,12 +222,12 @@ int main()
                         count++;//debug
                     }
                     uint32* factor;
-                    factor = new uint32[3];
-                    factor[0] = b;
-                    factor[1] = a;
-                    factor[2] = aa;
+                    factor = new uint32[2];
+                    factor[0] = a;
+                    factor[1] = aa;
                     //printf("b:%u a:%u aa:%u\n",b,a,aa);
-                    retable.push_back(factor);
+                    //retable.push_back(factor);
+                    retable.insert( pair<uint32, uint32*>( b, factor ) );
                     ++t;
                     if( t%100 == 0 ) { printf("出た%u\n",retable.size()); }
                     //if( !(retable.size() < N_A) ) {//ループが終わりそうだったらuniqueする 
@@ -234,10 +243,10 @@ int main()
     }
     //tableを出力
     printf("owari\n");
-    retable.sort( StartLess() );    
-    for(list<uint32*>::iterator kout = retable.begin(); kout != retable.end(); ++kout) {
-        printf("Img:%u Pr1:%u Pr2:%u Size:%u\n", (*kout)[0], (*kout)[1], (*kout)[2], retable.size() );
-    }
+    //retable.sort( StartLess() );    
+    //for(map<uint32, uint32*>::iterator kout = retable.begin(); kout != retable.end(); ++kout) {
+    //    printf("Img:%u Pr1:%u Pr2:%u Size:%u\n", kout->first, (kout->second)[0], (kout->second)[1], retable.size() );
+    //}
     //retableにはuniqueな2collisionsがN_A個入ってる
     //ランダムな値に関数を取ってretableと一致するかどうか調べる
     time_t srap = time(0);
@@ -251,14 +260,16 @@ int main()
         //printf("%u\n",a);
         uint32 b = thash(a);
         struct tblchkret_l tmp;
-        tmp = tablechk_l(retable, b);
-        bool bol = tmp.hyouka;
-        list<uint32*>::iterator k = tmp.point;
-        if( bol ) {
-            printf( "a:%u k1:%u k2:%u  from%u i:%u gc:%u gcc:%u\n",a,(*k)[1],(*k)[2],b,i,gc,gcc );
-            if( (*k)[1] != a && (*k)[2] != a ) {
+        //tmp = tablechk_l(retable, b);
+        //bool bol = tmp.hyouka;
+        ///list<uint32*>::iterator k = tmp.point;
+        map<uint32, uint32*>::iterator k = retable.find(b);
+        if( k != retable.end() ) {
+            printf( "a:%u k1:%u k2:%u  from%u i:%u gc:%u gcc:%u\n",a,(k->second)[0],(k->second)[1],b,i,gc,gcc );
+            if( (k->second)[0] != a && (k->second)[1] != a ) {
                 time_t okrap = time(0);
-                printf( "%u:%u:%u from %u   i:%u gc:%u gcc:%u time:%d\n",a,(*k)[1],(*k)[2],b,i,gc,gcc,okrap-srap );
+                printf( "%u:%u:%u from %u   i:%u gc:%u gcc:%u time:%d\n",a,(k->second)[0],(k->second)[1],b,i,gc,gcc,okrap-srap );
+                return 0;
             }
         }
     }
