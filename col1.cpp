@@ -8,9 +8,7 @@
 #include <algorithm>
 #include <ctime>
 #include <time.h>
-<<<<<<< HEAD:col1.cpp
 #include <map>
->>>>>>> 0feec33736b974874302b56e8c9085c11f9e4231:col1.cpp
 
 #include "mt.h"
 #include "sha1.h"
