@@ -10,7 +10,6 @@
 #include <time.h>
 
 #include "mt.h"
-//#include "md5Main.h"
 #include "sha1.h"
 
 #ifndef uint32
