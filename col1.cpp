@@ -110,7 +110,7 @@ struct tblchkret tablechk(vector<uint32*> ctab, uint32 target ) {
 }
 
 //Alpha<=1/3 GAMMA=(1-Alpha)/2=1/3
-//N=2^32
+//N=2^32a
 const uint32 N_A = 1663;//2048;
 const uint32 N_R = 1663;//2048;
 int main()
